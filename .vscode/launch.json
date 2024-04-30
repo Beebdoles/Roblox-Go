@@ -1,0 +1,11 @@
+{
+    "version": "5.4.6",
+    "configurations": [
+        {
+            "type": "lua",
+            "request": "launch",
+            "name": "Launch",
+            "program": "Roblox Go/help.lua"
+        }
+    ]
+}
