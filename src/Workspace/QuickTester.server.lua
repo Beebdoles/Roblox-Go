@@ -1,7 +1,7 @@
-local ServerScriptService = game:GetService("ServerScriptService")
-local Board = require ServerScriptService:WaitForChild("Board")
-local Blob = require ServerScriptService:WaitForChild("Blob")
-local Coordinate = require ServerScriptService:WaitForChild("Coordinate")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Board = require(ReplicatedStorage.Board)
+local Blob = require(ReplicatedStorage.Blob)
+local Coordinate = require(ReplicatedStorage.Coordinate)
 
 local row1 = {"0", "0", "0", "0", "0", "b", "b", "w", "w", "b", "0", "0", "0", "0", "0", "0", "b", "b", "b"}
 local row2 = {"0", "0", "0", "0", "0", "b", "w", "0", "w", "b", "0", "0", "0", "0", "0", "0", "b", "w", "w"}
@@ -41,7 +41,7 @@ local row2_3 = {"0", "0", "0"}
 local board2 = Board.new(3, {row2_1, row2_2, row2_3})
 print(Board.VerifyAndCompute(board2))
 Board.ScanForGroups(board2, "w")
-print(Blob.PrintTiles(board2.Groups[3]))
+print(Blob.PrintTiles(board2.Groups[2]))
 print(board2.Groups[1].liberties)
 
 

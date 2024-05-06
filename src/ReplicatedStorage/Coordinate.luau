@@ -8,7 +8,7 @@ function Coordinate.new(x, y)
 	return self
 end
 
-function Coordinate.ToString(coordinate)
+function Coordinate.ToString(coordinate)	--allows for comparisons
 	return "(" .. tostring(coordinate.x) .. ", " .. tostring(coordinate.y) .. ")"
 end
 

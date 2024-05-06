@@ -1,7 +1,9 @@
 local Board = {}
 
-local Blob = require "Blob"
-local Coordinate = require "Coordinate"
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Blob = require(ReplicatedStorage.Blob)
+local Coordinate = require(ReplicatedStorage.Coordinate)
 
 function Board.new(size, data)
 	local self = {}
@@ -16,11 +18,12 @@ function Board.new(size, data)
 	self.isFinished = false
 
 	self.blobStorage = nil
-	self.Groups = {}
+	self.Groups = {}	--groups of pieces
+	self.TerritoryGroups = {}	--groups of non neutral territory
 	return self
 end
 
-function Board.CheckBlobLiberties(board, boolGrid, colour, x, y)
+function Board.CheckBlobLiberties(board, boolGrid, colour, x, y)	--recursive check
 	if x >= 1 and x <= board.size and y >= 1 and y <= board.size then
 		if not boolGrid[x][y] then
 			if board.data[x][y] == "0" then
@@ -43,11 +46,8 @@ function Board.CheckBlobLiberties(board, boolGrid, colour, x, y)
 	end
 end
 
-function Board.ScanForGroups(board, colour)
-	local groupCount = #board.Groups
-	for i = groupCount, 1, -1 do
-		table.remove(board.Groups, i) --replace with table.clear() in studio
-	end
+function Board.ScanForGroups(board, colour)	--scans for groups of stones, adds them to board group list
+	table.clear(board.Groups)	--empties the group table
 
 	local boolGrid = {}
 	for i = 1, board.size do
@@ -68,7 +68,7 @@ function Board.ScanForGroups(board, colour)
 	end
 end
 
-function Board.GetBlobInfo(board, boolGrid, x, y)
+function Board.GetBlobInfo(board, boolGrid, x, y)	--recursive check
 	if x >= 1 and x <= board.size and y >= 1 and y <= board.size then
 		if not boolGrid[x][y] then
 			if board.data[x][y] == "b" then
@@ -90,7 +90,9 @@ function Board.GetBlobInfo(board, boolGrid, x, y)
 	end
 end
 
-function Board.VerifyAndCompute(board)
+function Board.VerifyAndCompute(board)	--scans the entire board for territory and placed stones
+	table.clear(board.TerritoryGroups)	--refreshes the territory groups list just in case
+
 	local boolGrid = {}
 	for i = 1, board.size do
 		boolGrid[i] = {}
@@ -104,19 +106,26 @@ function Board.VerifyAndCompute(board)
 			if not boolGrid[i][j] then
 				board.blobStorage = Blob.new("territory", "0")
 				Board.GetBlobInfo(board, boolGrid, i, j)
+				
+				local action = true
 
 				if board.blobStorage.bCount == 0 and board.blobStorage.wCount ~= 0 then
 					board.whiteScore = board.whiteScore + board.blobStorage.score
 				elseif board.blobStorage.wCount == 0 and board.blobStorage.bCount ~= 0 then
 					board.blackScore = board.blackScore + board.blobStorage.score
 				else
-					return false
+					action = false
+					board.isFinished = false
 				end
 
-				board.blackScore = board.blackScore + board.blobStorage.bCount
-				board.blackCount = board.blackCount + board.blobStorage.bCount
-				board.whiteScore = board.whiteScore + board.blobStorage.wCount
-				board.whiteCount = board.whiteCount + board.blobStorage.wCount
+				if action then
+					board.blackScore = board.blackScore + board.blobStorage.bCount
+					board.blackCount = board.blackCount + board.blobStorage.bCount
+					board.whiteScore = board.whiteScore + board.blobStorage.wCount
+					board.whiteCount = board.whiteCount + board.blobStorage.wCount
+
+					table.insert(board.TerritoryGroups, board.blobStorage)
+				end
 			end
 		end
 	end
@@ -124,13 +133,19 @@ function Board.VerifyAndCompute(board)
 	return true
 end
 
-function Board.PrintGroups(board)
+function Board.PrintGroups(board)	--helper method
 	for i = 1, #board.Groups do
 		Blob.PrintTiles(board.Groups[i])
 	end
 end
 
-function Board.ToString(board)
+function Board.PrintTerritories(board)	--helper method
+	for i = 1, #board.TerritoryGroups do
+		Blob.PrintTiles(board.TerritoryGroups[i])
+	end
+end
+
+function Board.ToString(board)		--helper method
 	for i = 1, 19 do
 		local row = ""
 		for j = 1, 19 do
