@@ -29,19 +29,19 @@ local board1 = Board.new(19, board)
 
 for i = 1, board1.size do
     for j = 1, board1.size do
-        local piece = ReplicatedStorage.Piece:Clone()
+        local stone = ReplicatedStorage.Stone:Clone()
 
         if board1.data[i][j] == "w" then
-            piece.Color = Color3.new(1, 1, 1)
+            stone.Color = Color3.new(1, 1, 1)
         elseif board1.data[i][j] == "b" then
-            piece.Color = Color3.new(0, 0, 0)
+            stone.Color = Color3.new(0, 0, 0)
         else
-            piece.Transparency = 1
+            stone.Transparency = 1
         end
 
-        piece.Parent = workspace
-        piece.Anchored = true
-        piece.CanCollide = false
-        piece.Position = Vector3.new(j * piece.Size.X, 0, i * piece.Size.X)
+        stone.Parent = workspace
+        stone.Anchored = true
+        stone.CanCollide = false
+        stone.Position = Vector3.new(j * stone.Size.X, stone.Size.Y/2, i * stone.Size.X)
     end
 end
