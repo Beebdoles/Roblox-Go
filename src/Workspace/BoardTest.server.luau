@@ -27,6 +27,12 @@ local board = {row1, row2, row3, row4, row5, row6, row7, row8, row9, row10, row1
 
 local board1 = Board.new(19, board)
 
+local BoardSize19 = Instance.new("Part")
+BoardSize19.Parent = workspace
+BoardSize19.Size = Vector3.new(board1.size * 2, 1, board1.size * 2)
+BoardSize19.CFrame = CFrame.new(10, 0, 0)
+BoardSize19.Anchored = true
+
 for i = 1, board1.size do
     for j = 1, board1.size do
         local stone = ReplicatedStorage.Stone:Clone()
@@ -39,9 +45,19 @@ for i = 1, board1.size do
             stone.Transparency = 1
         end
 
-        stone.Parent = workspace
+        stone.Size = Vector3.new(1.983, 0.748, 1.966)
+        stone.Parent = BoardSize19
         stone.Anchored = true
         stone.CanCollide = false
-        stone.Position = Vector3.new(j * stone.Size.X, stone.Size.Y/2, i * stone.Size.X)
+
+        local offset = (BoardSize19.Size.X - (board1.size * stone.Size.X))/2
+        local adjustmentFactorX = BoardSize19.CFrame.X - BoardSize19.Size.X/2 + offset
+        local adjustmentFactorZ = BoardSize19.CFrame:ToWorldSpace().Z - BoardSize19.Size.Z/2 + offset
+
+        --print(BoardSize19.CFrame:ToWorldSpace())
+
+        stone.CFrame = CFrame.new(adjustmentFactorX + (j - 1) * stone.Size.X, BoardSize19.CFrame.Y + BoardSize19.Size.Y/2 + stone.Size.Y/2 , adjustmentFactorZ + (i - 1) * stone.Size.Z)
+
+        --stone.Position = Vector3.new(j * stone.Size.X, stone.Size.Y/2, i * stone.Size.X)
     end
 end

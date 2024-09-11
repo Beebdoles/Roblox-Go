@@ -73,9 +73,11 @@ function Board.GetBlobInfo(board, boolGrid, x, y)	--recursive check
 		if not boolGrid[x][y] then
 			if board.data[x][y] == "b" then
 				board.blobStorage.bCount = board.blobStorage.bCount + 1
+				table.insert(board.blobStorage.tiles, Coordinate.new(x, y))
 				boolGrid[x][y] = true
 			elseif board.data[x][y] == "w" then
 				board.blobStorage.wCount = board.blobStorage.wCount + 1
+				table.insert(board.blobStorage.tiles, Coordinate.new(x, y))
 				boolGrid[x][y] = true
 			else
 				board.blobStorage.score = board.blobStorage.score + 1
@@ -92,6 +94,7 @@ end
 
 function Board.VerifyAndCompute(board)	--scans the entire board for territory and placed stones
 	table.clear(board.TerritoryGroups)	--refreshes the territory groups list just in case
+	board.isFinished = true
 
 	local boolGrid = {}
 	for i = 1, board.size do
@@ -125,12 +128,15 @@ function Board.VerifyAndCompute(board)	--scans the entire board for territory an
 					board.whiteCount = board.whiteCount + board.blobStorage.wCount
 
 					table.insert(board.TerritoryGroups, board.blobStorage)
+				else
+					for i = 1, #board.blobStorage.tiles do
+						boolGrid[board.blobStorage.tiles[i].x][board.blobStorage.tiles[i].y] = false
+					end
 				end
 			end
 		end
 	end
-	board.isFinished = true
-	return true
+	return board.isFinished
 end
 
 function Board.PrintGroups(board)	--helper method
@@ -146,9 +152,9 @@ function Board.PrintTerritories(board)	--helper method
 end
 
 function Board.ToString(board)		--helper method
-	for i = 1, 19 do
+	for i = 1, board.size do
 		local row = ""
-		for j = 1, 19 do
+		for j = 1, board.size do
 			row = row .. board.data[i][j] .. " "
 		end
 		print(row)
