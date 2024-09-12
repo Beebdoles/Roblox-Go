@@ -14,6 +14,7 @@ function Board.new(size, data)
 	self.whiteCount = 0
 	self.blackScore = 0
 	self.whiteScore = 0
+	self.neutralScore = 0
 
 	self.isFinished = false
 
@@ -131,6 +132,7 @@ function Board.VerifyAndCompute(board)	--scans the entire board for territory an
 				else
 					for i = 1, #board.blobStorage.tiles do
 						boolGrid[board.blobStorage.tiles[i].x][board.blobStorage.tiles[i].y] = false
+						board.neutralScore += board.blobStorage.score
 					end
 				end
 			end

@@ -29,9 +29,69 @@ local board1 = Board.new(19, board)
 
 local BoardSize19 = Instance.new("Part")
 BoardSize19.Parent = workspace
-BoardSize19.Size = Vector3.new(board1.size * 2, 1, board1.size * 2)
-BoardSize19.CFrame = CFrame.new(10, 0, 0)
+BoardSize19.Size = Vector3.new(board1.size * 2.1, 1, board1.size * 2.1)
+BoardSize19.CFrame = CFrame.new(10, 0, 10) * CFrame.Angles(0, math.rad(90), 0)
 BoardSize19.Anchored = true
+BoardSize19.Color = Color3.new(0.803921, 0.556862, 0.258823)
+BoardSize19.Material = Enum.Material.Wood
+
+local boardDecoElements: Model = Instance.new("Model")
+boardDecoElements.Parent = workspace
+
+for i = 1, board1.size do
+    for j = 1, board1.size do
+        local stoneHolderPart: Part = Instance.new("Part")
+        stoneHolderPart.Color = Color3.new(1, 1, 1)
+        stoneHolderPart.Size = Vector3.new(2, 2, 2)
+        stoneHolderPart.Anchored = true
+        stoneHolderPart.CanCollide = false
+        stoneHolderPart.Transparency = 1
+        stoneHolderPart.Name = tostring(i) .. " " .. tostring(j)
+
+        stoneHolderPart.Position = Vector3.new(i * 2, 1, j * 2)
+        stoneHolderPart.Parent = boardDecoElements
+        local click = ReplicatedStorage.ChooseStonePos:Clone()
+        click.Parent = stoneHolderPart
+    end
+end
+
+local decoBar: Part = Instance.new("Part")
+decoBar.Color = Color3.new(0, 0, 0)
+decoBar.Size = Vector3.new((board1.size - 1) * 2, 0.1, 0.1)
+
+for i = 1, board1.size do
+    local barClone = decoBar:Clone()
+    barClone.Name = "decoBar"
+    barClone.CFrame = CFrame.new(board1.size + 1, 1.5, i * 2)
+    barClone.Parent = boardDecoElements
+end
+
+for i = 1, board1.size do
+    local barClone = decoBar:Clone()
+    barClone.Name = "decoBar"
+    barClone.CFrame = CFrame.new(i * 2, 1.5, board1.size + 1) * CFrame.Angles(0, math.rad(90), 0)
+    barClone.Parent = boardDecoElements
+end
+
+local centrePart1 = Instance.new("Part")
+centrePart1.Size = Vector3.new(0.1, 0.1, 0.1)
+centrePart1.Anchored = true
+centrePart1.CanCollide = false
+centrePart1.CFrame = CFrame.new(20, 0, 20)
+boardDecoElements.PrimaryPart = centrePart1
+centrePart1.Parent = boardDecoElements
+
+for _, v in pairs(boardDecoElements:GetChildren()) do
+    if v.Name ~= "Part" then
+        local weld = Instance.new("WeldConstraint")
+        weld.Parent = centrePart1
+        weld.Part0 = weld.Parent
+        weld.Part1 = v
+        v.Anchored = false
+    end
+end
+
+boardDecoElements.PrimaryPart:PivotTo(BoardSize19.CFrame * CFrame.new(0, -1, 0))
 
 for i = 1, board1.size do
     for j = 1, board1.size do
@@ -45,19 +105,12 @@ for i = 1, board1.size do
             stone.Transparency = 1
         end
 
-        stone.Size = Vector3.new(1.983, 0.748, 1.966)
-        stone.Parent = BoardSize19
+        stone.Size = Vector3.new(2, 0.748, 2) --1.966 prev z value, offset of 0.1615, r = 1.983
+        stone.Parent = boardDecoElements:FindFirstChild(tostring(i) .. " " .. tostring(j))
         stone.Anchored = true
         stone.CanCollide = false
 
-        local offset = (BoardSize19.Size.X - (board1.size * stone.Size.X))/2
-        local adjustmentFactorX = BoardSize19.CFrame.X - BoardSize19.Size.X/2 + offset
-        local adjustmentFactorZ = BoardSize19.CFrame:ToWorldSpace().Z - BoardSize19.Size.Z/2 + offset
-
-        --print(BoardSize19.CFrame:ToWorldSpace())
-
-        stone.CFrame = CFrame.new(adjustmentFactorX + (j - 1) * stone.Size.X, BoardSize19.CFrame.Y + BoardSize19.Size.Y/2 + stone.Size.Y/2 , adjustmentFactorZ + (i - 1) * stone.Size.Z)
-
-        --stone.Position = Vector3.new(j * stone.Size.X, stone.Size.Y/2, i * stone.Size.X)
+        stone.Position = boardDecoElements:FindFirstChild(tostring(i) .. " " .. tostring(j)).Position
+        stone.Position += Vector3.new(0, stone.Size.Y, 0)
     end
 end

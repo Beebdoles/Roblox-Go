@@ -33,6 +33,9 @@ print(board1.size)
 print(Board.VerifyAndCompute(board1))
 
 Board.ScanForGroups(board1, "w")
+print(board1.neutralScore + board1.whiteScore + board1.blackScore)
+
+print("-----new test-----")
 
 local row2_1 = {"0", "0", "0"}
 local row2_2 = {"w", "0", "w"}
